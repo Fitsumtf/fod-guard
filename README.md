@@ -2,6 +2,8 @@
 
 **Loose Object Control & Incident Intelligence for Vehicle Assembly**
 
+**🚀 Try it live:** https://fod-guard.streamlit.app — no install needed.
+
 Bringing aerospace-grade FOD (Foreign Object Debris/Damage) prevention practice to automotive and EV manufacturing: BM25 similarity search over past loose-object incidents, escape-point analytics, cost-of-escape modeling, and one-click professional incident reports.
 
 Built by a manufacturing & process engineer who led a loose-object control program in high-volume EV assembly that achieved a **~95% reduction in retained loose objects** — this tool encodes that program as software.
