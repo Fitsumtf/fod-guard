@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fod-guard"
+version = "0.1.0"
+description = "Loose Object Control & Incident Intelligence for Vehicle Assembly - aerospace FOD practice adapted to automotive/EV manufacturing"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Dr. Fitsum Taye Feyissa" }]
+requires-python = ">=3.9"
+dependencies = ["pandas", "python-docx>=1.0.0"]
+keywords = ["fod", "foreign-object-debris", "loose-object", "manufacturing", "quality", "ev", "bm25", "as9146"]
+
+[project.urls]
+Homepage = "https://github.com/Fitsumtf/fod-guard"
+
+[tool.setuptools]
+packages = ["fod_guard"]
