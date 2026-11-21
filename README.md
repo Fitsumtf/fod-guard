@@ -1,7 +1,7 @@
 # FODGuard 🔩
 
 > **New: FOD Guard 2.0 Control Center.** A full loose-object control dashboard with three trained AI models (text triage, Poisson risk forecast, anomaly alerts), a Claude-powered analyst and a guided story mode. Runs in the browser, no server.
-> **Live demo:** https://claude.ai/artifact/S12jPTSAtDB9x8utNRGjzd · **Code and model card:** [`v2/`](v2/)
+> **Code and model card:** [`v2/`](v2/)
 >
 > The original Streamlit app below is unchanged and still runs from the repo root.
 
