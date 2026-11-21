@@ -4,8 +4,6 @@ A dashboard for running a loose-object (FOD) program in vehicle general assembly
 
 FOD Guard 1.0 (the Streamlit app in the root of this repo) was a tool for searching past cases, escape analytics and incident reports. Version 2.0 is a full control center with three trained models, an AI assistant and a guided story mode for reviews.
 
-**Live demo:** https://claude.ai/artifact/S12jPTSAtDB9x8utNRGjzd
-
 > All data in this repo is synthetic. It is calibrated to a real program that took loose objects at the vehicle drive test (VDT) from about 20 per 100 vehicles down to about 1, but no plant records are included.
 
 ## What it does
