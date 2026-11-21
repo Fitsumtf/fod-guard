@@ -1,0 +1,35 @@
+{
+  "triage": {
+    "area": {
+      "classes": 8,
+      "test_rows": 2125,
+      "top1_accuracy": 0.894,
+      "top3_accuracy": 0.969,
+      "macro_f1": 0.915
+    },
+    "object_category": {
+      "classes": 7,
+      "test_rows": 2125,
+      "top1_accuracy": 0.982,
+      "top3_accuracy": 1.0,
+      "macro_f1": 0.979
+    },
+    "root_cause": {
+      "classes": 14,
+      "test_rows": 2125,
+      "top1_accuracy": 0.902,
+      "top3_accuracy": 0.993,
+      "macro_f1": 0.922
+    }
+  },
+  "risk": {
+    "rows": 2912,
+    "test_rows": 448,
+    "holdout": "last 4 weeks (2026-10-19 onward)",
+    "d2_train": 0.858,
+    "d2_holdout": 0.158,
+    "daily_rate_mae_holdout": 0.223,
+    "d2_random_holdout": 0.836,
+    "holdout_mean_rate": 1.087
+  }
+}
