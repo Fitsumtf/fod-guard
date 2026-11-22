@@ -235,9 +235,10 @@ V.runTriage = function () {
       <div class="why">${r.why.length ? r.why.map((w) => `<span title="weight ${w.w.toFixed(2)}">${FG.esc(w.term)}</span>`).join("") : '<span>no strong area words</span>'}</div></div>
     <div class="tr-section"><span class="tr-label">Most similar past finds</span>
       <ul class="similar">${sim.map((s) => { const rec = FG.record(s.k); return `<li><span>${FG.esc(rec.description)}</span><span class="meta">${rec.id} · ${FG.dateLabel(rec.date, false)} · ${FG.esc(rec.area)} · ${FG.esc(rec.root_cause_label)}</span></li>`; }).join("") || '<li class="empty">No close matches.</li>'}</ul></div>
-    <div class="form-row"><button type="button" class="btn btn-primary" id="logFind">Log this find</button><button type="button" class="btn btn-ghost" id="copyTriage">Copy summary</button></div>`;
+    <div class="form-row"><button type="button" class="btn btn-primary" id="logFind">Log this find</button><button type="button" class="btn btn-ghost" id="addFromTriage">Add to the dashboard</button><button type="button" class="btn btn-ghost" id="copyTriage">Copy summary</button></div>`;
   FG.$("#logFind").addEventListener("click", () => V.logFind(r));
   FG.$("#copyTriage").addEventListener("click", () => FG.copy(V.triageSummary(r), "Summary copied"));
+  FG.$("#addFromTriage").addEventListener("click", () => EN.startFrom(r.text));
 };
 V.triageSummary = (r) => `Loose-object find: ${r.text}
 Likely source: ${r.area.slice(0, 3).map((x) => `${x.cls} ${FG.pct(x.p)}`).join(", ")}
@@ -528,7 +529,7 @@ V.data = function () {
   V.tablePage = Math.min(V.tablePage, pages - 1);
   const slice = rows.slice(V.tablePage * per, V.tablePage * per + per);
   FG.$("#recordTable").innerHTML = `<thead><tr><th>ID</th><th>Date</th><th>Area</th><th>Object</th><th>Root cause</th><th>Zone</th><th>Class</th><th class="num">Runs</th><th class="num">Min</th><th>Description</th></tr></thead><tbody>${
-    slice.map((k) => { const r = FG.record(k); return `<tr><td class="mono">${r.id}</td><td class="mono">${FG.dateLabel(r.date, false)} ${r.shift[0]}</td><td>${FG.esc(r.area)}<div class="card-hint mono">${FG.esc(r.station)}</div></td><td>${FG.esc(r.object)}</td><td>${FG.esc(r.root_cause_label)}</td><td>${FG.esc(r.zone)}</td><td>${r.severity}</td><td class="num">${r.vdt_runs}</td><td class="num">${FG.fmt(r.minutes, 0)}</td><td class="card-hint" style="max-width:340px">${FG.esc(r.description)}</td></tr>`; }).join("")
+    slice.map((k) => { const r = FG.record(k); return `<tr${/^(NEW|CSV)-/.test(r.id) ? ' class="row-new"' : ""}><td class="mono">${r.id}${/^(NEW|CSV)-/.test(r.id) ? '<div><span class="tag tag-ai">Added</span></div>' : ""}</td><td class="mono">${FG.dateLabel(r.date, false)} ${r.shift[0]}</td><td>${FG.esc(r.area)}<div class="card-hint mono">${FG.esc(r.station)}</div></td><td>${FG.esc(r.object)}</td><td>${FG.esc(r.root_cause_label)}</td><td>${FG.esc(r.zone)}</td><td>${r.severity}</td><td class="num">${r.vdt_runs}</td><td class="num">${FG.fmt(r.minutes, 0)}</td><td class="card-hint" style="max-width:340px">${FG.esc(r.description)}</td></tr>`; }).join("")
     || `<tr><td colspan="10" class="empty">No records match. Clear the search or widen the period.</td></tr>`}</tbody>`;
   FG.$("#pager").innerHTML = `<span>${FG.int(rows.length)} records · page ${V.tablePage + 1} of ${pages}</span><div>
     <button type="button" class="btn btn-ghost" data-page="-1" ${V.tablePage === 0 ? "disabled" : ""}>Previous</button>

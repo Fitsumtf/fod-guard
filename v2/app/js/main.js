@@ -2,10 +2,11 @@
 "use strict";
 
 (function () {
-  const VIEWS = ["overview", "triage", "risk", "root-cause", "actions", "roi", "assistant", "data-models"];
+  const VIEWS = ["overview", "triage", "add-data", "risk", "root-cause", "actions", "roi", "assistant", "data-models"];
   const RENDER = {
     overview: () => V.overview(),
     triage: () => {},
+    "add-data": () => EN.renderList(),
     risk: () => V.risk(),
     "root-cause": () => V.rootCause(),
     actions: () => V.actions(),
@@ -53,6 +54,18 @@
     FG.$("#asOfLabel").textContent = `${FG.dateLabel(D.dates[FG.state.asOf])} · ${FG.phaseOf(FG.state.asOf)}`;
     FG.$("#filterNote").textContent = `${FG.periodLabel()}`;
   }
+  function drawPhases() {
+    const D = FG.D, w = (a, b) => ((b - a) / D.nDates) * 100 + "%";
+    FG.$("#timelinePhases").innerHTML = `<span class="ph-base" style="width:${w(0, D.rolloutIdx)}"></span><span class="ph-roll" style="width:${w(D.rolloutIdx, D.sustainIdx)}"></span><span class="ph-sus" style="width:${w(D.sustainIdx, D.nDates)}"></span>`;
+  }
+  // called after new data is merged in
+  FG.refresh = function () {
+    AI.bm25 = null; AI.alerts = null; V.plan = null;
+    FG.$("#asOf").max = FG.D.nDates - 1;
+    drawPhases();
+    syncFilters();
+    render();
+  };
   FG.setState = function (patch) {
     Object.assign(FG.state, patch);
     syncFilters();
@@ -83,9 +96,7 @@
     /* timeline */
     const asOf = FG.$("#asOf");
     asOf.max = D.nDates - 1;
-    const ph = FG.$("#timelinePhases");
-    const w = (a, b) => ((b - a) / D.nDates) * 100 + "%";
-    ph.innerHTML = `<span class="ph-base" style="width:${w(0, D.rolloutIdx)}"></span><span class="ph-roll" style="width:${w(D.rolloutIdx, D.sustainIdx)}"></span><span class="ph-sus" style="width:${w(D.sustainIdx, D.nDates)}"></span>`;
+    drawPhases();
     asOf.addEventListener("input", () => { stopPlay(); FG.setState({ asOf: Number(asOf.value) }); });
     FG.$("#playBtn").addEventListener("click", () => (playing ? stopPlay() : play()));
 
@@ -251,6 +262,7 @@
 2026-11-25,Night,,,,,,Clicking under driver seat; M8 nut on floor pan after break
 2026-11-26,Day,EOL repair,eol_leftover,Tools and fixtures,Floor pan, under carpet,15,Spanner on rear floor after repair`;
 
+  FG.parseCSV = (t) => parseCSV(t);
   function parseCSV(text) {
     const rows = [];
     let row = [], cell = "", q = false;
@@ -301,7 +313,7 @@
       }
       if (!recs.length) throw new Error("No usable rows. Check the date format (YYYY-MM-DD) and the area names.");
       loadImported(recs);
-      note.textContent = `Loaded ${FG.int(recs.length)} rows from ${file.name}. The triage model filled in ${FG.int(filled)} rows with missing fields. Vehicles per shift are assumed at ${D.plant.jph} an hour.`;
+      note.textContent = `Loaded ${FG.int(recs.length)} rows from ${file.name}. The triage model filled in ${FG.int(filled)} rows with missing fields. Vehicles are assumed at 500 a shift (50 an hour for 10 hours). To add finds to the demo data instead, use Add data.`;
       FG.$("#restoreDemo").hidden = false;
       FG.$("#plantPill").textContent = `Your data · ${file.name}`;
       FG.toast(`<b>${FG.int(recs.length)} finds loaded.</b> Every view now shows your data.`);
@@ -330,7 +342,8 @@
       inc.z.push(ix("zone", r.zone)); inc.sv.push(ix("severity", r.sev)); inc.vr.push(1); inc.mn.push(r.minutes); inc.td.push(0); inc.es.push(0);
       inc.tn.push(0); inc.vm.push(0); inc.vin.push("-"); inc.tx.push(r.desc);
     }
-    const veh = Math.round(old.plant.jph * old.plant.shift_hours);
+    const veh = 500;   // 50 an hour x 10 hours: 10.5 working hours less about half an hour of stops
+    FG.replaced = true;
     const sh = { d: [], s: [], a: [], v: [], dt: [], nw: [], n: [] };
     const cnt = new Map();
     recs.forEach((r) => { const k = `${di.get(r.date)}|${r.shift}|${old.areas.indexOf(r.area)}`; cnt.set(k, (cnt.get(k) || 0) + 1); });
@@ -358,10 +371,11 @@
     FG.$("#claudeBrief").hidden = !sample;
     AS.greet();
     if (dictation) setupMic(dictation);
-    else FG.$("#micNote").textContent = "Tip: press Ctrl or Cmd + Enter to analyze.";
+    else { FG.$("#micNote").textContent = "Tip: press Ctrl or Cmd + Enter to analyze."; FG.$("#enMicNote").textContent = "Tip: press Ctrl or Cmd + Enter to start."; }
     FG.$("#exportCsv").textContent = downloads ? "Export CSV" : "Copy CSV";
     if (db) subscribeLog(db);
     V.renderLog();
+    EN.init(db);
   }
 
   function subscribeLog(db) {
@@ -379,25 +393,32 @@
   }
 
   function setupMic(d) {
-    const btn = FG.$("#micBtn"), ta = FG.$("#triageText");
-    btn.hidden = false;
-    FG.$("#micNote").textContent = "Or press the mic and speak the find.";
-    let baseText = "", listening = false;
-    d.onPartial(({ text }) => { ta.value = (baseText + " " + text).trim(); });
-    d.onFinal(({ text }) => { baseText = (baseText + " " + text).trim(); ta.value = baseText; });
+    // one dictation session, shared by the mic buttons on AI triage and Add data
+    const targets = [
+      { btn: FG.$("#micBtn"), ta: FG.$("#triageText"), note: FG.$("#micNote"), done: () => V.runTriage() },
+      { btn: FG.$("#enMic"), ta: FG.$("#enText"), note: FG.$("#enMicNote"), done: () => EN.start() },
+    ];
+    let cur = null, baseText = "", listening = false;
+    targets.forEach((t) => { t.btn.hidden = false; t.note.textContent = "Or press the mic and speak the find."; });
+    d.onPartial(({ text }) => { if (cur) cur.ta.value = (baseText + " " + text).trim(); });
+    d.onFinal(({ text }) => { if (!cur) return; baseText = (baseText + " " + text).trim(); cur.ta.value = baseText; });
     d.onState(({ state }) => {
       listening = state === "listening";
-      btn.classList.toggle("listening", listening);
-      btn.setAttribute("aria-label", listening ? "Stop dictation" : "Dictate the description");
-      if (!listening && baseText) V.runTriage();
-    });
-    btn.addEventListener("click", () => {
-      if (listening) { d.stop().catch(() => {}); return; }
-      baseText = ta.value.trim();
-      d.start().catch((e) => {
-        if (e && e.code === "not_granted") { btn.hidden = true; FG.$("#micNote").textContent = "Microphone not allowed. Typing works just as well."; }
+      targets.forEach((t) => {
+        const on = listening && t === cur;
+        t.btn.classList.toggle("listening", on);
+        t.btn.setAttribute("aria-label", on ? "Stop dictation" : "Dictate the description");
       });
+      if (!listening && cur && baseText) { const t = cur; cur = null; t.done(); }
     });
+    targets.forEach((t) => t.btn.addEventListener("click", () => {
+      if (listening) { d.stop().catch(() => {}); return; }
+      cur = t; baseText = t.ta.value.trim();
+      d.start().catch((e) => {
+        cur = null;
+        if (e && e.code === "not_granted") targets.forEach((x) => { x.btn.hidden = true; x.note.textContent = "Microphone not allowed. Typing works just as well."; });
+      });
+    }));
   }
 
   /* ------------------------------------------------------------ boot */
@@ -412,6 +433,7 @@
     wire();
     wireTour();
     V.triageInit();
+    EN.wire();
     V.roiInit();
     V.modelCards();
     AS.init();
