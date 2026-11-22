@@ -24,7 +24,7 @@ night shift, share of new associates (people-driven areas), downtime hours, and
 the ramp of each of 7 countermeasure levers by area. Countermeasures launched on
 the same day are grouped into one lever because their effects can't be separated.
 
-- Hold-out: last 4 weeks (2026-10-19 onward)
+- Hold-out: last 4 weeks (2026-10-26 onward)
 - Deviance explained (D²) on a random 20% hold-out: 0.829
 - Forecast check on the last 4 weeks: daily plant rate mean absolute error
   0.19 per 100 vehicles, against an actual mean of

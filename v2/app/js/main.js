@@ -247,9 +247,9 @@
   }
 
   const TEMPLATE = `date,shift,area,root_cause,object_category,zone,minutes,description
-2026-11-18,Day,Marriage,zip_tail,Zip ties,IP / dash cavity,22,Rattle at bump section; zip-tie tail behind IP near harness
-2026-11-18,Night,,,,,,Clicking under driver seat; M8 nut on floor pan after break
-2026-11-19,Day,EOL repair,eol_leftover,Tools and fixtures,Floor pan, under carpet,15,Spanner on rear floor after repair`;
+2026-11-25,Day,Marriage,zip_tail,Zip ties,IP / dash cavity,22,Rattle at bump section; zip-tie tail behind IP near harness
+2026-11-25,Night,,,,,,Clicking under driver seat; M8 nut on floor pan after break
+2026-11-26,Day,EOL repair,eol_leftover,Tools and fixtures,Floor pan, under carpet,15,Spanner on rear floor after repair`;
 
   function parseCSV(text) {
     const rows = [];
