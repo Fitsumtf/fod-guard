@@ -39,7 +39,7 @@ random.seed(SEED)
 
 OUT = Path(__file__).resolve().parent
 
-START = date(2026, 5, 18)          # Monday
+START = date(2026, 5, 25)          # Monday; 26 weeks end Sunday Nov 22, 2026
 WEEKS = 26
 DAYS = WEEKS * 7
 ROLLOUT_START = START + timedelta(weeks=4)   # baseline = first 4 weeks
@@ -356,7 +356,7 @@ def main():
             base += 0.09
         new_assoc_week[w] = max(0.03, base + rng.normal(0, 0.012))
 
-    spike_start, spike_end = date(2026, 10, 5), date(2026, 10, 8)
+    spike_start, spike_end = date(2026, 10, 12), date(2026, 10, 15)
 
     for day in range(DAYS):
         d = START + timedelta(days=day)

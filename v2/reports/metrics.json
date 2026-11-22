@@ -25,7 +25,7 @@
   "risk": {
     "rows": 2912,
     "test_rows": 448,
-    "holdout": "last 4 weeks (2026-10-19 onward)",
+    "holdout": "last 4 weeks (2026-10-26 onward)",
     "d2_train": 0.846,
     "d2_holdout": 0.205,
     "daily_rate_mae_holdout": 0.192,
