@@ -125,8 +125,8 @@ V.briefData = function () {
     per100: +S.per100.toFixed(2), finds: S.n, perDay: +S.perDay.toFixed(1), costPerDay: Math.round(S.costPerDay),
     baselinePer100: +B.per100.toFixed(4), reductionVsBaseline: B.per100 ? +(1 - S.per100 / B.per100).toFixed(4) : null,
     previousPer100: prev ? +prev.per100.toFixed(2) : null,
-    firstRunDetection: +S.firstRun.toFixed(3), escapes: S.escapes,
-    topAreas: areas.slice(0, 3).map(([a, c]) => ({ area: a, finds: c, share: +(c / Math.max(1, S.n)).toFixed(3) })),
+    firstRunDetection: +S.firstRun.toFixed(4), escapes: S.escapes,
+    topAreas: areas.slice(0, 3).map(([a, c]) => ({ area: a, finds: c, share: +(c / Math.max(1, S.n)).toFixed(4) })),
     topCauses: causes.slice(0, 3).map(([c, k]) => ({ cause: D.cause_meta[c]?.label || c, finds: k })),
     alerts: alerts.slice(0, 3).map((a) => ({ date: D.dates[a.d], area: D.areas[a.a], shift: a.s ? "Night" : "Day", observed: a.n, expected: +a.lam.toFixed(1) })),
     nextShiftHighestRisk: hi.area ? { area: hi.area, shift: hi.slot.label, per100: +hi.v.toFixed(2) } : null,
@@ -135,7 +135,13 @@ V.briefData = function () {
 
 V.renderBrief = function (claudeText) {
   const box = FG.$("#briefText");
-  if (claudeText) { box.innerHTML = `<p>${FG.esc(claudeText).replace(/\n/g, "<br>")}</p><p class="card-hint">Rewritten by Claude from the data above.</p>`; return; }
+  if (claudeText) {
+    const lines = claudeText.split(/\n+/).map((l) => l.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim()).filter(Boolean);
+    const st = FG.state;
+    box.innerHTML = `<p class="brief-head">As of ${FG.dateLabel(FG.D.dates[st.asOf])} · ${FG.esc(FG.filterLabel() || "All areas, both shifts")}</p>` +
+      `<ul>${lines.map((l) => `<li>${FG.esc(l)}</li>`).join("")}</ul><p class="card-hint">Rewritten by Claude from the data above.</p>`;
+    return;
+  }
   const b = V.briefData();
   const trend = b.previousPer100 == null ? "" : b.per100 <= b.previousPer100 ? `, down from ${FG.fmt(b.previousPer100, 2)}` : `, up from ${FG.fmt(b.previousPer100, 2)}`;
   const items = [

@@ -193,8 +193,37 @@ AS.rewriteBrief = async function () {
   btn.disabled = true;
   btn.textContent = "Writing...";
   try {
-    const data = V.briefData();
-    const res = await FG.caps.sample(`Write a shift handover brief for a production manager from this loose-object data. Five short lines, plain words, numbers with units, end with one action for the next shift. No headings, no markdown symbols.\n\nData: ${JSON.stringify(data)}`, { modelTier: "quick", cache: false });
+    const b = V.briefData();
+    const pct = (x) => (x == null ? null : FG.pct(x));
+    // Same numbers as the screen, already rounded and labelled with units.
+    const data = {
+      period: b.period, scope: b.filter, phase: b.phase,
+      looseObjectsPer100Vehicles: b.per100.toFixed(2),
+      previousPeriodPer100Vehicles: b.previousPer100 == null ? null : b.previousPer100.toFixed(2),
+      baselinePer100Vehicles: b.baselinePer100.toFixed(1),
+      belowBaseline: b.reductionVsBaseline == null ? null : Math.floor(b.reductionVsBaseline * 100 + 1e-9) + "%",
+      finds: b.finds, findsPerDay: b.perDay.toFixed(1),
+      eolLaborPerDay: "$" + b.costPerDay.toLocaleString("en-US"),
+      foundOnFirstVdtRun: pct(b.firstRunDetection), escapesToCustomers: b.escapes,
+      topAreas: b.topAreas.map((a) => `${a.area}: ${a.finds} finds (${pct(a.share)})`),
+      topCauses: b.topCauses.map((c) => `${c.cause}: ${c.finds} finds`),
+      anomalyAlerts: b.alerts.map((a) => `${a.area}, ${a.shift.toLowerCase()} shift, ${a.date}: ${a.observed} finds vs about ${a.expected} expected`),
+      shiftToWatchNext: b.nextShiftHighestRisk ? `${b.nextShiftHighestRisk.area}, ${b.nextShiftHighestRisk.shift.endsWith("N") ? "night" : "day"} shift, forecast ${b.nextShiftHighestRisk.per100.toFixed(2)} per 100 vehicles` : null,
+    };
+    const prompt = `Write a shift handover brief for a production manager in a vehicle assembly plant, from the loose-object data below.
+
+Rules:
+- Exactly 5 lines. Each line is one short sentence of at most 20 words.
+- Line 1: the rate per 100 vehicles, compared with the previous period and the baseline.
+- Line 2: where the finds came from and the top cause.
+- Line 3: first-run detection and escapes, or the anomaly alerts if there are any.
+- Line 4: the shift to watch next.
+- Line 5: one concrete action for the next shift, starting with a verb.
+- Use the numbers exactly as given. Say "vehicles", never "units". Keep the $ sign on money.
+- Plain words. No headings, no bullets, no markdown, no line numbers.
+
+Data: ${JSON.stringify(data)}`;
+    const res = await FG.caps.sample(prompt, { modelTier: "quick", cache: false });
     V.renderBrief(res.text.trim());
   } catch (e) {
     FG.toast(e && e.code === "not_granted" ? "Claude wasn't allowed in this view." : "Claude couldn't write the brief right now.");
