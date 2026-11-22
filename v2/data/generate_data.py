@@ -33,7 +33,7 @@ from pathlib import Path
 
 import numpy as np
 
-SEED = 20261121
+SEED = 192   # a draw whose 4-week baseline lands near the case study: about 1,000 cars, 20 per 100, 30 min a find
 rng = np.random.default_rng(SEED)
 random.seed(SEED)
 
@@ -108,7 +108,7 @@ FINAL_SHARE = {"extra_in_hand": .16, "left_at_break": .14, "rejected_manual": .0
                "robot_drop": .04, "zip_tail": .12, "clip_broken": .01, "clip_dropped": .04,
                "tool_forgotten": .07, "paint_fixture": .07, "eol_leftover": .08,
                "biw_slag": .06, "supplier_sealed": .01, "housekeeping": .10, "personal": .05}
-OVERALL_REMAINING = 0.05   # 95% reduction
+OVERALL_REMAINING = 0.0475   # lands the sustain phase near 1 per 100 (95% reduction)
 
 # ---------------------------------------------------------------- countermeasures
 @dataclass
@@ -166,9 +166,17 @@ for _c, _base in BASE_CAUSE_SHARE.items():
                 fixed *= _cm.causes[_c]
     prim.causes[_c] = need / fixed
 
-# The simulation multiplies the rate by night-shift and staffing effects, so
-# scale the input rate to land on 20 loose objects per 100 vehicles overall.
-BASE_RATE = 20.0 / 1.075
+# The simulation multiplies the rate by night-shift, staffing and downtime
+# effects, so scale the input rate to land on 20 loose objects per 100 vehicles.
+BASE_RATE = 17.65
+
+# Unplanned stops: about 30 minutes per 10.5-hour shift, so the line builds
+# about 50 x 10 = 500 cars a shift and about 1,000 a day.
+DOWNTIME_SCALE = 18.75
+
+# Technician minutes per find: about 30 before the program and about 15 after.
+MIN_SCALE_BEFORE = 0.968
+MIN_SCALE_AFTER = 1.06
 
 
 def cm_progress(cm: CM, d: date) -> float:
@@ -356,7 +364,7 @@ def main():
         phase = "Baseline" if d < ROLLOUT_START else (
             "Rollout" if d < ROLLOUT_START + timedelta(weeks=9) else "Sustain")
         for shift in SHIFTS:
-            downtime = float(min(120, rng.gamma(1.6, 14.0)))
+            downtime = float(min(120, rng.gamma(1.6, DOWNTIME_SCALE)))
             vehicles = int(round(JPH * (SHIFT_HOURS - downtime / 60.0) + rng.normal(0, 6)))
             night = 1.12 if shift == "Night" else 1.0
             for area in AREAS:
@@ -413,6 +421,7 @@ def main():
                         else:
                             mins = rng.lognormal(math.log(15), 0.35) * (1 - 0.25 * camera)
                         mins += 2.0 * (runs - 1)
+                        mins *= MIN_SCALE_BEFORE + (MIN_SCALE_AFTER - MIN_SCALE_BEFORE) * camera
                         mins = float(round(max(6.0, mins), 1))
                         teardown = bool(internal and random.random() < 0.55 * (1 - 0.75 * camera))
                         escaped = bool(random.random() < (0.0045 * (1 - 0.7 * bumps)) / (1 if internal else 2))
