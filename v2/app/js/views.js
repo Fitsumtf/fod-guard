@@ -123,10 +123,10 @@ V.briefData = function () {
     asOf: D.dates[st.asOf], period: FG.periodLabel(range), filter: FG.filterLabel() || "All areas, both shifts",
     phase: FG.phaseOf(st.asOf),
     per100: +S.per100.toFixed(2), finds: S.n, perDay: +S.perDay.toFixed(1), costPerDay: Math.round(S.costPerDay),
-    baselinePer100: +B.per100.toFixed(2), reductionVsBaseline: B.per100 ? +(1 - S.per100 / B.per100).toFixed(4) : null,
+    baselinePer100: +B.per100.toFixed(4), reductionVsBaseline: B.per100 ? +(1 - S.per100 / B.per100).toFixed(4) : null,
     previousPer100: prev ? +prev.per100.toFixed(2) : null,
-    firstRunDetection: +S.firstRun.toFixed(3), escapes: S.escapes,
-    topAreas: areas.slice(0, 3).map(([a, c]) => ({ area: a, finds: c, share: +(c / Math.max(1, S.n)).toFixed(3) })),
+    firstRunDetection: +S.firstRun.toFixed(4), escapes: S.escapes,
+    topAreas: areas.slice(0, 3).map(([a, c]) => ({ area: a, finds: c, share: +(c / Math.max(1, S.n)).toFixed(4) })),
     topCauses: causes.slice(0, 3).map(([c, k]) => ({ cause: D.cause_meta[c]?.label || c, finds: k })),
     alerts: alerts.slice(0, 3).map((a) => ({ date: D.dates[a.d], area: D.areas[a.a], shift: a.s ? "Night" : "Day", observed: a.n, expected: +a.lam.toFixed(1) })),
     nextShiftHighestRisk: hi.area ? { area: hi.area, shift: hi.slot.label, per100: +hi.v.toFixed(2) } : null,
@@ -135,11 +135,17 @@ V.briefData = function () {
 
 V.renderBrief = function (claudeText) {
   const box = FG.$("#briefText");
-  if (claudeText) { box.innerHTML = `<p>${FG.esc(claudeText).replace(/\n/g, "<br>")}</p><p class="card-hint">Rewritten by Claude from the data above.</p>`; return; }
+  if (claudeText) {
+    const lines = claudeText.split(/\n+/).map((l) => l.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim()).filter(Boolean);
+    const st = FG.state;
+    box.innerHTML = `<p class="brief-head">As of ${FG.dateLabel(FG.D.dates[st.asOf])} · ${FG.esc(FG.filterLabel() || "All areas, both shifts")}</p>` +
+      `<ul>${lines.map((l) => `<li>${FG.esc(l)}</li>`).join("")}</ul><p class="card-hint">Rewritten by Claude from the data above.</p>`;
+    return;
+  }
   const b = V.briefData();
   const trend = b.previousPer100 == null ? "" : b.per100 <= b.previousPer100 ? `, down from ${FG.fmt(b.previousPer100, 2)}` : `, up from ${FG.fmt(b.previousPer100, 2)}`;
   const items = [
-    `<b>${FG.fmt(b.per100, 2)} loose objects per 100 vehicles</b>${trend}. ${b.finds} finds, about ${FG.fmt(b.perDay, 1)} a day${b.reductionVsBaseline != null ? `, ${Math.round(b.reductionVsBaseline * 100)}% below the ${FG.fmt(b.baselinePer100, 1)} baseline` : ""}.`,
+    `<b>${FG.fmt(b.per100, 2)} loose objects per 100 vehicles</b>${trend}. ${b.finds} finds, about ${FG.fmt(b.perDay, 1)} a day${b.reductionVsBaseline != null ? `, ${Math.floor(b.reductionVsBaseline * 100 + 1e-9)}% below the ${FG.fmt(b.baselinePer100, 1)} baseline` : ""}.`,
     b.topAreas.length ? `Biggest source: <b>${FG.esc(b.topAreas[0].area)}</b> (${FG.pct(b.topAreas[0].share)} of finds). Top cause: ${FG.esc(b.topCauses[0]?.cause || "-")}.` : "No finds in this period.",
     b.alerts.length ? `<b>${b.alerts.length === 1 ? "1 anomaly" : b.alerts.length + " anomalies"}</b> flagged. Latest: ${FG.esc(b.alerts[0].area)} ${b.alerts[0].shift.toLowerCase()} shift on ${FG.dateLabel(b.alerts[0].date, false)}, ${b.alerts[0].observed} finds against about ${b.alerts[0].expected} expected.` : "No anomalies flagged by the risk model.",
     b.nextShiftHighestRisk ? `Next shift to watch: <b>${FG.esc(b.nextShiftHighestRisk.area)}</b> (${b.nextShiftHighestRisk.shift.endsWith("N") ? "night" : "day"}), forecast ${FG.fmt(b.nextShiftHighestRisk.per100, 2)} per 100.` : "",

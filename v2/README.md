@@ -4,7 +4,7 @@ A dashboard for running a loose-object (FOD) program in vehicle general assembly
 
 FOD Guard 1.0 (the Streamlit app in the root of this repo) was a tool for searching past cases, escape analytics and incident reports. Version 2.0 is a full control center with three trained models, an AI assistant and a guided story mode for reviews.
 
-> All data in this repo is synthetic. It is calibrated to a real program that took loose objects at the vehicle drive test (VDT) from about 20 per 100 vehicles down to about 1, but no plant records are included.
+> All data in this repo is synthetic. It is calibrated to a real program that took loose objects at the vehicle drive test (VDT) from about 20 per 100 vehicles down to about 1, but no plant records are included. The 4-week baseline averages about 1,000 cars a day (50 an hour, 10.5 working hours a shift, about 30 minutes of unplanned stops), 20 loose objects per 100 vehicles, 200 a day, and 30 minutes of technician time per find.
 
 ## What it does
 
@@ -25,14 +25,14 @@ FOD Guard 1.0 (the Streamlit app in the root of this repo) was a tool for search
 
 All three are trained in Python with scikit-learn and exported to JSON. The browser runs them directly, so there is no server and nothing leaves the page.
 
-1. **Triage (text classification).** TF-IDF on words and word pairs feeding multinomial logistic regression, with three heads. Tested on 2,125 records it never saw:
+1. **Triage (text classification).** TF-IDF on words and word pairs feeding multinomial logistic regression, with three heads. Tested on 2,002 records it never saw:
    - Source area: 89% top-1, 97% top-3
-   - Root cause: 90% top-1, 99% top-3
+   - Root cause: 89% top-1, 99% top-3
    - Object category: 98% top-1
 
    The JavaScript re-implementation matches Python to within 0.0001.
 
-2. **Risk (Poisson regression).** Predicts loose objects per 100 vehicles for each area and shift, with vehicles as exposure. Inputs are area, night shift, share of new associates, downtime, and how far each of 7 countermeasure levers has ramped. Deviance explained is 0.84 on a random 20% hold-out. On the last four weeks it is off by 0.22 per 100 a day on an actual rate of 1.09.
+2. **Risk (Poisson regression).** Predicts loose objects per 100 vehicles for each area and shift, with vehicles as exposure. Inputs are area, night shift, share of new associates, downtime, and how far each of 7 countermeasure levers has ramped. Deviance explained is 0.83 on a random 20% hold-out. On the last four weeks it is off by 0.19 per 100 a day on an actual rate of 1.00.
 
 3. **Anomaly alerts and impact.** An area and shift is flagged when its count is very unlikely under the risk model (Poisson tail under 0.1%, at least 4 finds). The countermeasure waterfall runs the same model one lever at a time.
 
@@ -44,7 +44,7 @@ Similar-find search uses BM25 over past descriptions.
 cd v2
 pip install -r requirements.txt
 
-# 1. Generate the synthetic plant data (26 weeks, about 10,600 finds)
+# 1. Generate the synthetic plant data (26 weeks, about 10,000 finds)
 python data/generate_data.py
 
 # 2. Train the models and export them for the app
