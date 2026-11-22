@@ -350,6 +350,27 @@ textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: 
 .chat-form { display: flex; gap: 8px; }
 .chat-form input { flex: 1; }
 
+/* ------------------------------------------------------------ add data */
+.stack { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.en-chat { max-height: 380px; }
+.en-chat .msg { white-space: normal; }
+.en-got { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; }
+.en-src { font-size: 11px; color: var(--muted); margin-left: 4px; white-space: nowrap; }
+.en-answer { display: grid; gap: 8px; }
+.chip-first { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.en-after { margin-top: 8px; }
+.en-confirm { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 12px; }
+.en-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+.en-grid label { display: grid; gap: 4px; font-size: 12.5px; color: var(--ink-2); align-content: start; }
+.en-lab { display: flex; align-items: baseline; gap: 2px; flex-wrap: wrap; }
+.en-grid .en-wide { grid-column: 1 / -1; }
+.en-grid select, .en-grid input[type="date"] { width: 100%; border: 1px solid var(--line-2); border-radius: 8px; padding: 9px 10px; background: var(--surface); font-size: 13.5px; color: var(--ink); }
+.en-grid input[type="text"], .en-grid input[type="number"], .en-grid textarea { padding: 9px 10px; font-size: 13.5px; color: var(--ink); }
+.en-grid select:focus, .en-grid input[type="date"]:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.btn-warn { border-color: var(--crit); color: var(--crit); }
+.row-new td { background: var(--accent-soft); }
+@media (max-width: 640px) { .en-grid { grid-template-columns: 1fr; } }
+
 /* ------------------------------------------------------------ data & models */
 .import { display: grid; gap: 10px; font-size: 13px; }
 .dropzone { border: 2px dashed var(--line-2); border-radius: 10px; padding: 18px; text-align: center; color: var(--ink-2); display: grid; gap: 6px; place-items: center; }

@@ -70,6 +70,7 @@ FG.load = async function () {
     }),
   ]);
   FG.M = models;
+  FG.RAW = typeof structuredClone === "function" ? structuredClone(plant) : JSON.parse(JSON.stringify(plant));
   FG.decode(plant);
 };
 
@@ -189,7 +190,7 @@ FG.daily = function (toIdx = FG.state.asOf, opts = {}) {
 FG.record = function (k) {
   const D = FG.D, I = D.incidents, C = D.cats;
   return {
-    id: "LO-" + String(k + 1).padStart(6, "0"),
+    id: (I.nid && I.nid[k]) || "LO-" + String((I.bk ? I.bk[k] : k) + 1).padStart(6, "0"),
     date: D.dates[I.d[k]],
     shift: I.s[k] ? "Night" : "Day",
     hour_of_shift: I.h[k],

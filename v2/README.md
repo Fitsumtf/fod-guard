@@ -17,6 +17,7 @@ FOD Guard 1.0 (the Streamlit app in the root of this repo) was a tool for search
 | **Countermeasures** | A waterfall showing what each fix removed, estimated by the risk model, plus the full register with control level, owner and status. |
 | **Cost and ROI** | EOL labor before and after, and a payback check for any capital option. |
 | **Ask FOD Guard** | A Claude-powered analyst that calls the dashboard's own data and models as tools. It writes shift briefs, 8D summaries and supplier emails. A built-in offline analyst answers the common questions when Claude isn't available. |
+| **Add data** | Log a new find with the AI helper: type or speak it, and it fills in what it can (date, shift, location, object, fastener size, VDT run) and asks only for what's missing, with tap-to-answer choices. Enter a shift's cars built and stops, or upload a CSV of many finds. Everything saved flows into every chart, alert and forecast, and can be removed again. |
 | **Data and models** | Every record, CSV export, CSV import (the triage model fills in missing fields) and model cards with held-out results. |
 
 **Present the story** walks a reviewer through the program in eight steps: the problem, where, why, what changed, the result, what it was worth, how AI keeps it there, and AI at the line. The timeline slider in the top bar replays the whole program week by week.
@@ -61,7 +62,8 @@ Steps 1 and 2 are optional. The repo ships with the exported `app/data/plant.jso
 
 Two ways:
 
-- **In the app:** Data and models → Bring your own data. Load a CSV with at least a date and a description. The triage model fills in any missing area, root cause or object. The file stays in the browser.
+- **Add to the demo data:** the Add data page. Log finds one at a time with the AI helper, enter shift numbers, or upload a CSV. Entries are saved (shared database on the hosted version, this browser when run locally) until you remove them.
+- **Replace the demo data:** Data and models → Bring your own data. Load a CSV with at least a date and a description. The triage model fills in any missing area, root cause or object. The file stays in the browser.
 - **Retrain:** replace `data/incidents.csv` and `data/shifts.csv` with your records in the same columns, then run `python models/train.py`.
 
 ## Project layout
@@ -77,6 +79,7 @@ app/js/ai.js            triage, BM25 search, risk forecast, anomaly alerts
 app/js/charts.js        ECharts views with table fallbacks
 app/js/views.js         each screen
 app/js/assistant.js     Claude analyst with tool calls, plus offline answers
+app/js/entry.js         Add data: guided AI intake, shift numbers, CSV upload, merge into every view
 app/js/main.js          routing, timeline, story mode, import and export
 ```
 
