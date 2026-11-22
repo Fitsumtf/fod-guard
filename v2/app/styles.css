@@ -115,7 +115,7 @@ svg { flex: none; }
 .pill-ai.ready .dot { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent); }
 
 .icon-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--surface); display: grid; place-items: center; cursor: pointer; }
-.icon-btn svg { width: 16px; height: 16px; fill: var(--ink); }
+.icon-btn svg { width: 16px; height: 16px; fill: var(--ink); color: var(--ink); }
 .icon-btn:hover { border-color: var(--accent); }
 
 .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; padding: 8px 14px; border: 1px solid transparent; cursor: pointer; font-weight: 500; font-size: 13.5px; white-space: nowrap; }

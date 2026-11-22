@@ -137,6 +137,25 @@
     FG.$("#copyTemplate").addEventListener("click", () => FG.copy(TEMPLATE, "Template copied. Paste it into a spreadsheet."));
     FG.$("#restoreDemo").addEventListener("click", () => location.reload());
 
+    /* light / dark switch: follows the computer until you choose, then remembers */
+    const MOON = '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>';
+    const SUN = '<circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>';
+    const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
+    const paintThemeBtn = () => {
+      const dark = isDark(), btn = FG.$("#themeBtn"), label = dark ? "Switch to light mode" : "Switch to dark mode";
+      FG.$("#themeIcon").innerHTML = dark ? SUN : MOON;
+      btn.setAttribute("aria-label", label); btn.title = label;
+    };
+    try { const saved = localStorage.getItem("fodguard.theme"); if (saved === "dark" || saved === "light") document.documentElement.dataset.theme = saved; } catch (e) { /* storage blocked */ }
+    paintThemeBtn();
+    FG.$("#themeBtn").addEventListener("click", () => {
+      const next = isDark() ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem("fodguard.theme", next); } catch (e) { /* storage blocked: lasts this visit */ }
+      paintThemeBtn();
+    });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paintThemeBtn);
+
     /* theme changes */
     const rerender = () => { Object.values(FGC.inst).forEach((c) => c.dispose()); FGC.inst = {}; render(); };
     matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rerender);
