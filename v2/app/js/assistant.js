@@ -220,6 +220,7 @@ Rules:
 - Line 4: the shift to watch next.
 - Line 5: one concrete action for the next shift, starting with a verb.
 - Use the numbers exactly as given. Say "vehicles", never "units". Keep the $ sign on money.
+- Write area names exactly as given, with the same capital letters: BIW, Paint, Subframe, Pre-marriage, Marriage, Post-marriage, EOL repair, Supplier.
 - Plain words. No headings, no bullets, no markdown, no line numbers.
 
 Data: ${JSON.stringify(data)}`;
