@@ -129,7 +129,7 @@ CMS = [
        | {"biw_slag": None}),
     CM("cm_robot", "Robot wrong-shot process alert and training", 1.0, "Administer", "Robotics, line leads",
        {"robot_drop": None}),
-    CM("cm_magnetic", "Magnetic chairs and point-of-use fastener racks", 2.0, "Engineer", "Manufacturing engineering",
+    CM("cm_magnetic", "Rolling work seats and point-of-use fastener racks", 2.0, "Engineer", "Manufacturing engineering",
        {"extra_in_hand": None, "rejected_manual": None, "clip_dropped": None}),
     CM("cm_shadow", "Shadow boards for tools and jigs", 3.0, "Engineer", "Manufacturing engineering",
        {"tool_forgotten": None}),

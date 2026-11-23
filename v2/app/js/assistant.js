@@ -9,7 +9,7 @@ const PROMPTS = [
   "What caused the October spike, and how do we stop it happening again?",
   "Draft a short 8D summary of the program for my director",
   "Draft an email to the IP and console supplier about sealed-in screws",
-  "What happens if the magnetic racks stop being used?",
+  "What happens if the work seats and racks stop being used?",
   "How do we get from 95% to 99%?",
 ];
 
@@ -165,12 +165,12 @@ AS.offline = function (q) {
     const sup = FG.breakdown(D.baseRange, "area", { area: "all", shift: "all" }).find((x) => x[0] === "Supplier");
     return `Subject: Loose screws and clips sealed inside IP and console modules\n\nHello,\n\nOur Vehicle Drive Test is finding screws and clips sealed inside the IP and center console modules you supply. Over our four-week baseline that was ${sup ? sup[1] : "a number of"} finds, about 5% of all loose objects at our line, and each one costs a teardown and a repeat drive test.\n\nWe've opened a SCAR. Please:\n1. Contain at your site: add a shake or tilt check before sealing each module.\n2. Send your root cause and corrective action within 10 working days.\n3. Cover the cost of containment and any teardown at our plant until the fix is verified.\n\nWe can share photos, part numbers and dates for every find.\n\nThank you,`;
   }
-  if (s.includes("magnetic") || s.includes("rack") || s.includes("slip") || s.includes("stop")) {
+  if (s.includes("magnetic") || s.includes("work seat") || s.includes("rack") || s.includes("slip") || s.includes("stop")) {
     const plan = AI.defaultPlan();
     const ref = AI.forecast(plan).avg;
     plan.slipped.L3 = true;
     const fc = AI.forecast(plan).avg;
-    return `If the magnetic chairs and point-of-use racks stop being used, the risk model expects the plant rate to rise from ${FG.fmt(ref, 2)} to about ${FG.fmt(fc, 2)} per 100 vehicles, roughly ${FG.fmt(((fc - ref) * 1000) / 100, 1)} more finds a day at 1,000 vehicles. Most of the rise lands on Subframe, Pre-marriage, Marriage and Post-marriage, through extra fasteners carried in hand. Try it yourself in Risk outlook by switching that lever off.`;
+    return `If the rolling work seats and point-of-use racks stop being used, the risk model expects the plant rate to rise from ${FG.fmt(ref, 2)} to about ${FG.fmt(fc, 2)} per 100 vehicles, roughly ${FG.fmt(((fc - ref) * 1000) / 100, 1)} more finds a day at 1,000 vehicles. Most of the rise lands on Subframe, Pre-marriage, Marriage and Post-marriage, through extra fasteners carried in hand. Try it yourself in Risk outlook by switching that lever off.`;
   }
   if (s.includes("99") || s.includes("next") || s.includes("further")) {
     return `The low-cost fixes got the plant to about ${Math.round(red * 100)}%. The last few percent are spread thin across many causes, so the next step is to catch objects earlier and make errors harder to make:\n1. Zone close-out checks before cavities are closed (carpet, IP, door trim).\n2. Count-controlled fastener kits, a cheaper step toward dispensers.\n3. A rundown-count interlock so a vehicle can't leave a station with a missing or rejected bolt.\n4. Seeded-object tests to measure how well VDT finds plastic and small parts.\n5. Layered process audits to keep the current countermeasures alive.\nThe scanning tunnel (about $900K) would remove the remaining labor cost of about ${FG.money(now.costPerDay * 365)} a year, so it only pays back if it prevents costly escapes. See Cost and ROI.`;

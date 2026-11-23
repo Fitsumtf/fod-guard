@@ -211,7 +211,7 @@
       { view: "root-cause", state: { asOf: D.rolloutIdx - 1, period: "28" }, spot: "#fishbone",
         title: "Why they got there", body: "Traced by part number, location and process flow. Human error was the starting point, not the root cause: no place to hold fasteners, no check before breaks, weak clips, a sealed supplier module." },
       { view: "actions", state: { asOf: end, period: "all" }, spot: "#waterfallChart",
-        title: "What we changed", body: `Seven levers, cheapest first: standard work, magnetic chairs and racks, shadow boards, checklists, a clip redesign and a supplier SCAR. The risk model credits each one: ${FG.fmt(steps[0].rate, 1)} down to ${FG.fmt(steps[steps.length - 1].rate, 1)} per 100.` },
+        title: "What we changed", body: `Seven levers, cheapest first: standard work, rolling work seats and racks, shadow boards, checklists, a clip redesign and a supplier SCAR. The risk model credits each one: ${FG.fmt(steps[0].rate, 1)} down to ${FG.fmt(steps[steps.length - 1].rate, 1)} per 100.` },
       { view: "overview", state: { asOf: D.sustainIdx, period: "7" }, spot: "#trendCard",
         title: "The result", body: `95% fewer loose objects in 8 to 9 weeks. Better detection helped too: bumps on the VDT route and a magnetic camera tool cut the time per find in half.` },
       { view: "roi", state: { asOf: end }, spot: "#roiOut",
