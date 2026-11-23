@@ -77,7 +77,7 @@ AI.zoneOf = function (text) {
 };
 
 AI.PLAYBOOK = {
-  extra_in_hand: { action: "Check the station's point-of-use rack and magnetic chair are in use, and remind the associate: one cycle's fasteners only.", cm: "cm_magnetic" },
+  extra_in_hand: { action: "Check the station's point-of-use rack and rolling work seat are in use, and remind the associate: one cycle's fasteners only.", cm: "cm_magnetic" },
   left_at_break: { action: "Confirm the clean-before-you-leave check ran before the last break or handover on this line.", cm: "cm_clean" },
   rejected_manual: { action: "Rejected bolts go in the red reject bin before the next shot. Coach the associate and check the bin is at the station.", cm: "cm_magnetic" },
   robot_drop: { action: "Pull the robot fault log for this shift and confirm the rejected bolt was removed before restart.", cm: "cm_robot" },

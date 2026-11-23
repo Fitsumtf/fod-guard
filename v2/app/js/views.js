@@ -8,7 +8,7 @@ const STATUS_COLOR = { Sustaining: "--good", Done: "--good", Proposed: "--s1", "
 
 function shortLever(name) {
   return name.replace("Clean before you leave and daily quality meeting", "Clean before you leave + daily meeting")
-    .replace("Magnetic chairs and point-of-use racks", "Magnetic chairs + racks")
+    .replace("Rolling work seats and point-of-use racks", "Work seats + racks")
     .replace("Shadow boards and paint fixture checklist", "Shadow boards + fixture checklist")
     .replace("EOL post-repair exit checklist", "EOL exit checklist")
     .replace("Supplier SCAR and containment", "Supplier SCAR")

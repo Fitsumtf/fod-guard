@@ -125,7 +125,7 @@ triage_export["minutes"] = minutes_lookup
 LEVERS = [
     {"key": "L1", "name": "Clean before you leave and daily quality meeting", "cms": ["cm_clean", "cm_tier"]},
     {"key": "L2", "name": "Robot wrong-shot alert", "cms": ["cm_robot"]},
-    {"key": "L3", "name": "Magnetic chairs and point-of-use racks", "cms": ["cm_magnetic"]},
+    {"key": "L3", "name": "Rolling work seats and point-of-use racks", "cms": ["cm_magnetic"]},
     {"key": "L4", "name": "Shadow boards and paint fixture checklist", "cms": ["cm_shadow", "cm_paint"]},
     {"key": "L5", "name": "EOL post-repair exit checklist", "cms": ["cm_eolcheck"]},
     {"key": "L6", "name": "Push clip redesign", "cms": ["cm_clip"]},
